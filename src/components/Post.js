@@ -1,12 +1,28 @@
 import React from "react";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
+import { useDispatch } from "react-redux";
+import { notSilAPI } from "../actions";
+import Swal from "sweetalert2";
 
 export default function Post({ item }) {
-
-  function handleSil() {
-    // burada ilgili eylemi dispatch edin
-    // sonra toast mesajı gösterin
+  const dispatch = useDispatch();
+  function handleSil(id) {
+    Swal.fire({
+      title: "Silmek istediğinizden emin misiniz?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Sil",
+      denyButtonText: `Vazgeç`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        dispatch(notSilAPI(id));
+        Swal.fire("Notunuz Silindi!", "", "success");
+      } else if (result.isDenied) {
+        Swal.fire("Notunuz silinmedi", "", "info");
+      }
+    });
   }
 
   return (
@@ -24,7 +40,10 @@ export default function Post({ item }) {
         </p>
       ))}
 
-      <button className="text-xs text-amber-600 mt-4 underline" onClick={handleSil}>
+      <button
+        onClick={() => handleSil(item.id)}
+        className="text-xs text-amber-600 mt-4 underline"
+      >
         Bu notu sil
       </button>
     </div>
